@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>task-1</title>
+	<style type="text/css">
+		.box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-left: -185px;
+            margin-top: -135px;
+			width: 370px;
+			height: 270px;
+			border: 1px solid #eee;
+		}
+        .box-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url(./img/task1.png) no-repeat 0 10px;
+        }
+		.inner-horizontal, .inner-vertical {
+			position: absolute;
+			top:  50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		    width: 330px;
+    		height: 180px;
+		}
+		.inner-horizontal {
+			width: 0;
+			border-bottom: 4px solid #fff;
+			border-top: 4px solid #fff;
+			transition: width 1s ease-out;
+		}
+		.inner-vertical {
+		    height: 188px;
+		    height: 0;
+			border-left: 2px solid #fff;
+			border-right: 2px solid #fff;
+			transition: height 1s ease-out;
+		}
+		.inner-content {
+			position: absolute;
+			text-align: center;
+			width: 100%;
+			top: 80px;
+            transition: all .2s linear;
+            opacity: 0;
+		}
+        .box:hover .box-bg {
+            filter: blur(4px);
+        }
+
+        .box:hover .inner-horizontal {
+            width: 330px;
+        }
+
+        .box:hover .inner-vertical {
+            height: 188px;
+        }
+        .box:hover .inner-content {
+            opacity: 1;
+            top: 70px;
+        }
+        .box:hover .inner-title {
+			background-image: -webkit-linear-gradient(left,#3498db,#f47920 10%,#d71345 20%,#f7acbc 30%,#ffd400 40%,#3498db 50%,#f47920 60%,#d71345 70%,#f7acbc 80%,#ffd400 90%,#3498db);
+			color: transparent;
+			-webkit-background-clip: text;
+            background-size: 200%;
+            transition: all .2s ease-out;
+            animation: streamer 5s infinite linear;
+		}
+        .box:hover .inner-text {
+            animation: text_color 3s infinite linear;
+        }
+        @keyframes text_color {
+            0% {
+                color: #38ba72;
+            }
+            50% {
+                color: #337ab7;
+            }
+            100% {
+                color: #38ba72;
+            }
+        }
+        @keyframes streamer {
+            0% {
+                background-position: 0 0
+            }
+
+            100% {
+                background-position: -100% 0
+            }
+        }
+	</style>
+</head>
+<body>
+	
+	<div class="box" id="j-box">
+        <div class="box-bg" id="box-bg">
+
+        </div>
+		<div class="inner-horizontal">
+		</div>
+		<div class="inner-vertical">
+		</div>
+		<div class="inner-content">
+			<p class="inner-title">欢迎参加百度前端技术学院</p>
+			<p class="inner-text">点击报名</p>
+		</div>
+	</div>
+	<script type="text/javascript">
+		/*window.onload = function (argument) {
+			var box = document.getElementById('j-box');
+			setTimeout(() => {
+				box.classList.add('hover');
+			}, 500);
+		}*/
+	</script>
+</body>
+</html>
