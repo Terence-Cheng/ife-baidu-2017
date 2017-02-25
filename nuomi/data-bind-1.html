@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>data-bind-1</title>
+</head>
+<body>
+    <script>
+        
+        function Observer(data) {
+            this.data = data;
+            this.walk(data);
+        }
+        Observer.prototype.observe = function (key, val) {
+            console.log(this)
+            Object.defineProperty(this.data, key, {
+                enumerable: true,
+                configurable: true,
+                get: function () {
+                    console.log(`您访问了${key}属性`)
+                },
+                set: function(newValue) {
+                    console.log(`您设置了${key}的属性为${newValue}`);
+                    if (val === newValue) {
+                        return
+                    }
+                    val = newValue;
+                }
+            })
+        }
+        Observer.prototype.walk = function(data) {
+            console.log(this);
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                    var val = data[key];
+                    if (typeof val === 'object') {
+                        console.log(`key:${key}为一个对象，value: ${val}`);
+                        this.walk(val);
+                    }
+                    console.log(`key:${key}将加入监控，value: ${val}`);
+                    this.observe(key, val);
+                }
+            }
+        }
+
+        var data = {
+            user: {
+                name: "liangshaofeng",
+                age: "24"
+            },
+            address: {
+                city: "beijing"
+            }
+        };
+        var app = new Observer(data);
+    </script>
+</body>
+</html>
