@@ -12,6 +12,11 @@ Pubsub.prototype = {
         return this;
     },
     emit: function (eventType) {
+
+        if (!this.handlers[eventType]) {
+            return;
+        }
+
         var length = this.handlers[eventType].length;
         var args = Array.prototype.slice.call(arguments, 1);
         for (var i = 0; i < length; i++) {
