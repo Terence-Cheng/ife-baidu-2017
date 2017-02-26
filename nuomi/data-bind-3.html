@@ -7,12 +7,14 @@
 <body>
 <script src="./js/pubsub.js"></script>
 <script>
+    /*
+    * 在之前pubsub的基础上，注册事件时，发现是Object则继续递归注册，详见Observer.prototype.$watch
+    * 这样虽然实现了题目中所说的功能，但并不是冒泡
+    * */
     var observerPubSub = new Pubsub();
-    function Observer(data, parentObj = null, parentKey = null) {
+    function Observer(data) {
         this.data = data;
         this.walk(data);
-        this.parentObj = parentObj;
-        this.parentKey = parentKey;
     }
     Observer.prototype.observe = function (key, val) {
         var self = this;
@@ -25,8 +27,7 @@
             },
             set: function(newValue) {
                 console.log(`您设置了${key}的属性为${newValue}`);
-                observerPubSub.emit(key, newValue, val);
-//                self.$emit(key, newValue, val, self.parentObj, self.parentKey);
+                observerPubSub.emit(key, newValue, val, key);
                 if (typeof newValue === 'object') {
                     new Observer(newValue);
                 }
@@ -53,17 +54,28 @@
             throw new Error('传入的第二个参数不是函数');
             return;
         }
-        observerPubSub.on(key, callback);
-    }
-    Observer.prototype.$emit = function (key, newValue, val) {
-        console.log(`触发了${key}`);
-        observerPubSub.emit(key, newValue, val);
-        console.log(this);
-        if (this.parentObj) {
-            this.$emit.call(this.parentObj, this.parentKey, newValue, val);
+
+        var innerObj = this.data[key];
+
+        if (typeof innerObj === 'object') {
+            innerWatch(innerObj, callback);
         }
+        observerPubSub.on(key, callback);
+        
+        function innerWatch(obj,callback) {
+            if (typeof obj === 'object') {
+                for (let key in obj) {
+                    if (typeof obj[key] === 'object') {
+                        innerWatch(obj[key], callback);
+                    } else {
+                        observerPubSub.on(key, callback);
+                    }
+                }
+            }
+        }
+        
     }
-    
+
     var data = {
         people:{
             name: {
@@ -75,10 +87,10 @@
     };
     var app2 = new Observer(data);
 
-    app2.$watch('people', function (newName) {
-        console.log('我的姓名发生了变化，可能是姓氏变了，也可能是名字变了。')
+    app2.$watch('people', function (newName, oldName, target) {
+        console.log(`我的${target}发生了变化，由${oldName}变成了${newName}`);
     });
-    app2.data.people.name.firstName = 'jskjf';
+    app2.data.people.name.firstName = 'Tingsen';
 </script>
 </body>
 </html>

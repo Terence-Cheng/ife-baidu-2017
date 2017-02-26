@@ -13,15 +13,17 @@ Pubsub.prototype = {
     },
     emit: function (eventType) {
 
-        if (!this.handlers[eventType]) {
-            return;
+        if (this.handlers[eventType]) {
+            var length = this.handlers[eventType].length;
+            var args = Array.prototype.slice.call(arguments, 1);
+
+            for (var i = 0; i < length; i++) {
+                this.handlers[eventType][i].apply(this, args);
+            }
         }
 
-        var length = this.handlers[eventType].length;
-        var args = Array.prototype.slice.call(arguments, 1);
-        for (var i = 0; i < length; i++) {
-            this.handlers[eventType][i].apply(this, args);
-        }
+
+
         return this;
     }
 }
