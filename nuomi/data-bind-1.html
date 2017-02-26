@@ -17,7 +17,8 @@
                 enumerable: true,
                 configurable: true,
                 get: function () {
-                    console.log(`您访问了${key}属性`)
+                    console.log(`您访问了${key}属性`);
+                    return val
                 },
                 set: function(newValue) {
                     console.log(`您设置了${key}的属性为${newValue}`);
@@ -35,7 +36,7 @@
                     var val = data[key];
                     if (typeof val === 'object') {
                         console.log(`key:${key}为一个对象，value: ${val}`);
-                        this.walk(val);
+                        new Observer(val);
                     }
                     console.log(`key:${key}将加入监控，value: ${val}`);
                     this.observe(key, val);
