@@ -5,8 +5,9 @@
     <title>data-bind-2</title>
 </head>
 <body>
+<script src="./js/pubsub.js"></script>
 <script>
-
+    var observerPubSub = new Pubsub();
     function Observer(data) {
         this.data = data;
         this.walk(data);
@@ -21,6 +22,7 @@
             },
             set: function(newValue) {
                 console.log(`您设置了${key}的属性为${newValue}`);
+                observerPubSub.emit(key, newValue, val);
                 if (typeof newValue === 'object') {
                     new Observer(newValue);
                 }
@@ -42,6 +44,13 @@
             }
         }
     }
+    Observer.prototype.$watch = function (key, callback) {
+        if (typeof  callback !== 'function') {
+            throw new Error('传入的第二个参数不是函数');
+            return;
+        }
+        observerPubSub.on(key, callback);
+    }
 
     var data = {
         name: 123,
@@ -55,6 +64,9 @@
         color: null
     };
     var app1 = new Observer(data);
+
+
+
 </script>
 </body>
 </html>
