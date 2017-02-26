@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>data-bind-2</title>
+</head>
+<body>
+<script src="./js/pubsub.js"></script>
+<script>
+    var observerPubSub = new Pubsub();
+    function Observer(data, parentObj = null, parentKey = null) {
+        this.data = data;
+        this.walk(data);
+        this.parentObj = parentObj;
+        this.parentKey = parentKey;
+    }
+    Observer.prototype.observe = function (key, val) {
+        var self = this;
+        Object.defineProperty(this.data, key, {
+            enumerable: true,
+            configurable: true,
+            get: function () {
+                console.log(`您访问了${key}属性`);
+                return val;
+            },
+            set: function(newValue) {
+                console.log(`您设置了${key}的属性为${newValue}`);
+                observerPubSub.emit(key, newValue, val);
+//                self.$emit(key, newValue, val, self.parentObj, self.parentKey);
+                if (typeof newValue === 'object') {
+                    new Observer(newValue);
+                }
+                if (val === newValue) {
+                    return;
+                }
+                val = newValue;
+            }
+        })
+    }
+    Observer.prototype.walk = function(data) {
+        for (var key in data) {
+            if (data.hasOwnProperty(key)) {
+                var val = data[key];
+                if (typeof val === 'object') {
+                    new Observer(val, data, key);
+                }
+                this.observe(key, val);
+            }
+        }
+    }
+    Observer.prototype.$watch = function (key, callback) {
+        if (typeof  callback !== 'function') {
+            throw new Error('传入的第二个参数不是函数');
+            return;
+        }
+        observerPubSub.on(key, callback);
+    }
+    Observer.prototype.$emit = function (key, newValue, val) {
+        console.log(`触发了${key}`);
+        observerPubSub.emit(key, newValue, val);
+        console.log(this);
+        if (this.parentObj) {
+            this.$emit.call(this.parentObj, this.parentKey, newValue, val);
+        }
+    }
+    
+    var data = {
+        people:{
+            name: {
+                firstName: 'shaofeng',
+                lastName: 'liang'
+            },
+            age: 25
+        }
+    };
+    var app2 = new Observer(data);
+
+    app2.$watch('people', function (newName) {
+        console.log('我的姓名发生了变化，可能是姓氏变了，也可能是名字变了。')
+    });
+    app2.data.people.name.firstName = 'jskjf';
+</script>
+</body>
+</html>
