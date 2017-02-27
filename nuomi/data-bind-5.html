@@ -19,9 +19,19 @@
      * observe中加入key的监听，回调函数是更新dom
      * set中触发key的事件
      * */
-    var observerPubSub = new Pubsub();
-    function Observer(data) {
+
+    function Observer(data, isPubsub, ancestor) {
         this.data = data;
+
+        if (isPubsub) {
+            this.observerPubSub = new Pubsub();
+            this.__proto__.ancestor = this;
+        } else {
+            if (ancestor) {
+                this.__proto__.ancestor = ancestor;
+            }
+            this.ancestor = this.__proto__.ancestor;
+        }
         this.walk(data);
     }
     Observer.prototype = {
@@ -31,14 +41,16 @@
                 enumerable: true,
                 configurable: true,
                 get: function () {
-                    console.log(`您访问了${key}属性`);
+//                    console.log(`您访问了${key}属性`);
                     return val;
                 },
                 set: function(newValue) {
-                    console.log(`您设置了${key}的属性为${newValue}`);
-                    observerPubSub.emit(key, newValue, val, key);
+//                    console.log(`您设置了${key}的属性为${newValue}`);
+//                    debugger;
+                    console.log(self);
+                    self.ancestor.observerPubSub.emit(key, newValue, val, key);
                     if (typeof newValue === 'object') {
-                        new Observer(newValue);
+                        new Observer(newValue, false, self.ancestor);
                     }
                     if (val === newValue) {
                         return;
@@ -47,12 +59,12 @@
                 }
             })
         },
-        walk: function(data) {
+        walk: function(data, ancestor) {
             for (var key in data) {
                 if (data.hasOwnProperty(key)) {
                     var val = data[key];
                     if (typeof val === 'object') {
-                        new Observer(val, data, key);
+                        new Observer(val);
                     }
                     this.observe(key, val);
                 }
@@ -63,35 +75,41 @@
                 throw new Error('传入的第二个参数不是函数');
                 return;
             }
-
+            var self = this;
             var innerObj = this.data[key];
 
             if (typeof innerObj === 'object') {
                 innerWatch(innerObj, callback);
             }
-            observerPubSub.on(key, callback);
+            this.observerPubSub.on(key, callback);
 
             function innerWatch(obj,callback) {
+                console.log(obj);
+//                debugger;
                 if (typeof obj === 'object') {
                     for (let key in obj) {
                         if (typeof obj[key] === 'object') {
                             innerWatch(obj[key], callback);
                         } else {
-                            observerPubSub.on(key, callback);
                         }
+                        console.log(key);
+                        self.observerPubSub.on(key, callback);
                     }
                 }
+
             }
 
         },
-        $lowWatch: function (key, callback) {
+        addWatch: function (key, callback) {
 
-        }
+        },
+        ancestor: null,
+        observerPubSub: null
     }
 
     function Vue(obj) {
         this.el = obj.el;
-        this.data = new Observer(obj.data);
+        this.data = new Observer(obj.data, true);
         this.init();
     }
     Vue.prototype = {
@@ -99,6 +117,7 @@
             this.domContainer = this.getDom();
             console.log(this.domContainer);
             this.traverseDom(this.domContainer);
+            this.addWatch();
         },
         /*
          * 获取dom元素
@@ -115,6 +134,7 @@
          * 遍历dom
          * */
         traverseDom: function (domContainer) {
+//            var domContainer = this.domContainer;
             domContainer.normalize();
             let domChild = domContainer.childNodes;
             let length = domChild.length;
@@ -155,23 +175,40 @@
             }
             console.log(tempResult);
             dom.nodeValue = value.replace(reg, tempResult);
+        },
+        addWatch: function () {
+            var self = this;
+            for(let key in this.data.data) {
+                if (this.data.data.hasOwnProperty(key)) {
+                    this.data.$watch(key, function (newName, oldName, target) {
+                        console.log(`${target}变化，由${oldName}变成了${newName}`);
+                        
+                    });
+                }
+            }
         }
     }
-    /*var data = {
-     people:{
-     name: {
-     firstName: 'shaofeng',
-     lastName: 'liang'
-     },
-     age: 25
-     }
-     };
-     var app2 = new Observer(data);
 
-     app2.$watch('people', function (newName, oldName, target) {
-     console.log(`我的${target}发生了变化，由${oldName}变成了${newName}`);
-     });
-     app2.data.people.name.firstName = 'Tingsen';*/
+    var data = {
+         people:{
+             name: {
+                 firstName: 'shaofeng',
+                 lastName: 'liang'
+            },
+            age: 25
+        }
+     };
+    var app2 = new Observer(data, true);
+
+    app2.$watch('people', function (newName, oldName, target) {
+        console.log(`我的${target}发生了变化，由${oldName}变成了${newName}`);
+    });
+    app2.data.people.name.firstName = 'Tingsen';
+
+    var app3 = new Observer({
+        a: 1
+    }, true);
+
 </script>
 <script type="text/javascript">
     let app = new Vue({

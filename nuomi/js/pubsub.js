@@ -28,12 +28,12 @@ Pubsub.prototype = {
     }
 }
 
-var pubSub = new Pubsub();
+/*var pubSub = new Pubsub();
 pubSub.on('A', function (data) {
     console.log(1 + data);
 });
 pubSub.on('A', function (data) {
     console.log(2 + data);
 });
-pubSub.emit('A', '我是参数');
+pubSub.emit('A', '我是参数');*/
 
