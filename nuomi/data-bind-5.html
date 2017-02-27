@@ -6,7 +6,6 @@
 </head>
 <body>
 <div id="app">
-    <!--jskfjksl-->
     <p>姓名：{{user.name}}</p>
     <p>年龄：<em>em</em> {{user.age}}</p>
     <p>测试三层数据{{like.people.color}}</p>
@@ -17,6 +16,8 @@
     /*
      * 在之前pubsub的基础上，注册事件时，发现是Object则继续递归注册，详见Observer.prototype.$watch
      * 这样虽然实现了题目中所说的功能，但并不是冒泡
+     * observe中加入key的监听，回调函数是更新dom
+     * set中触发key的事件
      * */
     var observerPubSub = new Pubsub();
     function Observer(data) {
@@ -81,6 +82,9 @@
                     }
                 }
             }
+
+        },
+        $lowWatch: function (key, callback) {
 
         }
     }
