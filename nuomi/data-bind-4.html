@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>data-bind-4</title>
+</head>
+<body>
+<div id="app">
+    <!--jskfjksl-->
+    <p>姓名：{{user.name}}</p>
+    <p>年龄：<em>em</em> {{user.age}}</p>
+    <p>测试三层数据{{like.people.color}}</p>
+</div>
+<!-- 观察者模式Js -->
+<script src="./js/pubsub.js"></script>
+<script>
+    /*
+    * 在之前pubsub的基础上，注册事件时，发现是Object则继续递归注册，详见Observer.prototype.$watch
+    * 这样虽然实现了题目中所说的功能，但并不是冒泡
+    * */
+    var observerPubSub = new Pubsub();
+    function Observer(data) {
+        this.data = data;
+        this.walk(data);
+    }
+    Observer.prototype.observe = function (key, val) {
+        var self = this;
+        Object.defineProperty(this.data, key, {
+            enumerable: true,
+            configurable: true,
+            get: function () {
+                console.log(`您访问了${key}属性`);
+                return val;
+            },
+            set: function(newValue) {
+                console.log(`您设置了${key}的属性为${newValue}`);
+                observerPubSub.emit(key, newValue, val, key);
+                if (typeof newValue === 'object') {
+                    new Observer(newValue);
+                }
+                if (val === newValue) {
+                    return;
+                }
+                val = newValue;
+            }
+        })
+    }
+    Observer.prototype.walk = function(data) {
+        for (var key in data) {
+            if (data.hasOwnProperty(key)) {
+                var val = data[key];
+                if (typeof val === 'object') {
+                    new Observer(val, data, key);
+                }
+                this.observe(key, val);
+            }
+        }
+    }
+    Observer.prototype.$watch = function (key, callback) {
+        if (typeof  callback !== 'function') {
+            throw new Error('传入的第二个参数不是函数');
+            return;
+        }
+
+        var innerObj = this.data[key];
+
+        if (typeof innerObj === 'object') {
+            innerWatch(innerObj, callback);
+        }
+        observerPubSub.on(key, callback);
+        
+        function innerWatch(obj,callback) {
+            if (typeof obj === 'object') {
+                for (let key in obj) {
+                    if (typeof obj[key] === 'object') {
+                        innerWatch(obj[key], callback);
+                    } else {
+                        observerPubSub.on(key, callback);
+                    }
+                }
+            }
+        }
+        
+    }
+
+    function Vue(obj) {
+        this.el = obj.el;
+        this.data = new Observer(obj.data).data;
+        this.init();
+    }
+    Vue.prototype = {
+        init: function () {
+            this.domContainer = this.getDom();
+            console.log(this.domContainer);
+            this.traverseDom(this.domContainer);
+        },
+        /*
+        * 获取dom元素
+        * */
+        getDom: function () {
+            let el = this.el;
+            let type = el.substring(0, 1);
+            let content = el.substring(1);
+            if (type === '#') {
+                return document.getElementById(content);
+            }
+        },
+        /*
+        * 遍历dom
+        * */
+        traverseDom: function (domContainer) {
+            domContainer.normalize();
+            let domChild = domContainer.childNodes;
+            let length = domChild.length;
+            let reg = /\{\{(.+)\}\}/g;
+            let value = '';
+            for (let i = 0; i < length; i++) {
+                var domI = domChild[i];
+                if (domI.nodeType === 3) {
+                    value = domI.nodeValue.trim();
+                    if (value) {
+                        console.log('文本节点');
+                        console.log(domI);
+                        reg.test(value) && this.replaceBoudndary(domI);
+
+                    }
+                } else if (domI.nodeType !== 8) {
+                    console.log(domI);
+                    this.traverseDom(domI);
+                }
+
+            }
+        },
+        /*
+        * 边界符替换值
+        * */
+        replaceBoudndary: function (dom) {
+            let value = dom.nodeValue.trim();
+            let reg = /\{\{(.+)\}\}/g;
+           /* if ( !reg.test(value) ) {
+                return //为什么验证加在这不管用
+            }*/
+            let regResult = reg.exec(value);
+            regResult = regResult[1];
+            let arrResult = regResult.split('.');
+            let tempResult = this.data;
+            for (let i = 0; i < arrResult.length; i++) {
+                tempResult = tempResult[arrResult[i]];
+            }
+            console.log(tempResult);
+            dom.nodeValue = value.replace(reg, tempResult);
+        }
+    }
+    /*var data = {
+        people:{
+            name: {
+                firstName: 'shaofeng',
+                lastName: 'liang'
+            },
+            age: 25
+        }
+    };
+    var app2 = new Observer(data);
+
+    app2.$watch('people', function (newName, oldName, target) {
+        console.log(`我的${target}发生了变化，由${oldName}变成了${newName}`);
+    });
+    app2.data.people.name.firstName = 'Tingsen';*/
+</script>
+<script type="text/javascript">
+let app = new Vue({
+    el: '#app',
+    data: {
+        user: {
+          name: 'youngwind',
+          age: 25
+        },
+        like: {
+            people: {
+                color: 'white'
+            }
+        }
+    }
+});
+</script>
+</body>
+</html>
