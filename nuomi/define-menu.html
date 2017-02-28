@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>define-menu</title>
+    <style>
+        html, body {
+            height: 100%;
+        }
+        #app {
+            width: 800px;
+            height: 200px;
+            border: 1px solid #f0f0f0;
+            border-radius: 2px;
+            background: #eee;
+        }
+        #context-menu {
+            position: fixed;
+            display: none;
+            background: #fff;
+        }
+        #context-menu.show {
+            display: block;
+        }
+        .context-menu-list {
+            width: 30px;
+        }
+        .context-menu-item {
+            border-top: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+
+    </div>
+    <div id="context-menu">
+        <ul class="context-menu-list">
+            <li class="context-menu-item">
+                右键菜单一
+            </li>
+            <li class="context-menu-item">
+                右键菜单二
+            </li>
+            <li class="context-menu-item">
+                右键菜单三
+            </li>
+            <li class="context-menu-item">
+                右键菜单四
+            </li>
+        </ul>
+    </div>
+<script>
+    /*
+    * 实现鼠标右击时，出现自定义菜单。
+    *   点击非自定义菜单区域时，隐藏自定义菜单。参考样例（点击查看），实现页面开发，要求实现效果基本一致。
+    *   点击自定义菜单条目时，弹出菜单条目名称。
+    * 注意
+        右下方
+        左下方
+        左上方
+        自定义菜单出现在鼠标指针右下方，当右边区域不够大，展示在左下方，同理，当下方区域不够时，展示在鼠标指针上方
+        注意测试不同情况，尤其是极端情况下的效果
+    *
+    * 1.右击区域注册右击事件
+    *    显示自定义菜单（默认右下方，左下方，右上方）
+    *    难点：
+    *         鼠标位置
+    *         如何出现在正确的位置上，左上角与鼠标位置相同，右上角与鼠标位置相同，右下角与鼠标位置相同
+    *         判断右方区域不够大，下方区域不够大
+    *
+    * 2.body注册点击事件
+    *    如果不是自定义菜单区域，则隐藏
+    *
+    * 3.自定义菜单注册单击事件
+    *    弹出当前条目名称
+    *
+    * */
+    var app = document.getElementById('app');
+    var contextMenu = document.getElementById('context-menu');
+    var body = document.getElementsByTagName('body')[0];
+
+    function bindEvents () {
+        app.addEventListener('contextmenu', rightClickCb, false);
+        body.addEventListener('click', bodyClickCb, false);
+    }
+
+    function rightClickCb (event) {
+        event.preventDefault();
+        contextMenu.classList.add('show');
+    }
+    function bodyClickCb (event) {
+        console.log('jkkk')
+        contextMenu.classList.remove('show');
+    }
+    function contextMenuCb () {
+
+    }
+    function getParents () {
+
+    }
+    bindEvents();
+
+</script>
+</body>
+</html>
