@@ -10,9 +10,35 @@
     <p>年龄：<em>em</em> {{user.age}}</p>
     <p>测试三层数据{{like.people.color}}</p>
 </div>
-<!-- 观察者模式Js -->
-<script src="./js/pubsub.js"></script>
 <script>
+
+    /*观察订阅模式*/
+    function Pubsub() {
+        this.handlers = {};
+    }
+    Pubsub.prototype = {
+        on: function (eventType, handler) {
+            var self = this;
+            if ( !(eventType in self.handlers) ) {
+                self.handlers[eventType] = [];
+            }
+            self.handlers[eventType].push(handler);
+            return this;
+        },
+        emit: function (eventType) {
+
+            if (this.handlers[eventType]) {
+                var length = this.handlers[eventType].length;
+                var args = Array.prototype.slice.call(arguments, 1);
+
+                for (var i = 0; i < length; i++) {
+                    this.handlers[eventType][i].apply(this, args);
+                }
+            }
+            return this;
+        }
+    }
+
     /*
      * 在之前pubsub的基础上，注册事件时，发现是Object则继续递归注册，详见Observer.prototype.$watch
      * 这样虽然实现了题目中所说的功能，但并不是冒泡
