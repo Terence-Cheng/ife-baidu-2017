@@ -20,10 +20,10 @@
      * set中触发key的事件
      * */
 
-    function Observer(data, isPubsub, ancestor) {
+    function Observer(data, notPubsub, ancestor) {
         this.data = data;
 
-        if (isPubsub) {
+        if (!notPubsub) {
             this.observerPubSub = new Pubsub();
             this.__proto__.ancestor = this;
         } else {
@@ -41,30 +41,28 @@
                 enumerable: true,
                 configurable: true,
                 get: function () {
-//                    console.log(`您访问了${key}属性`);
                     return val;
                 },
                 set: function(newValue) {
-//                    console.log(`您设置了${key}的属性为${newValue}`);
-//                    debugger;
                     console.log(self);
-                    self.ancestor.observerPubSub.emit(key, newValue, val, key);
+
                     if (typeof newValue === 'object') {
-                        new Observer(newValue, false, self.ancestor);
+                        new Observer(newValue, true, self.ancestor);
                     }
                     if (val === newValue) {
                         return;
                     }
                     val = newValue;
+                    self.ancestor.observerPubSub.emit(key, newValue, val, key);
                 }
             })
         },
-        walk: function(data, ancestor) {
+        walk: function(data) {
             for (var key in data) {
                 if (data.hasOwnProperty(key)) {
                     var val = data[key];
                     if (typeof val === 'object') {
-                        new Observer(val);
+                        new Observer(val, true);
                     }
                     this.observe(key, val);
                 }
@@ -100,23 +98,30 @@
             }
 
         },
-        addWatch: function (key, callback) {
-
-        },
         ancestor: null,
         observerPubSub: null
     }
 
+    /*
+    * 复制dom，原dom备份好
+    * 复制的dom里面进行数据替换，然后dom替换
+    *
+    * */
     function Vue(obj) {
         this.el = obj.el;
-        this.data = new Observer(obj.data, true);
+        var observer = new Observer(obj.data);
+        this._data = observer;
+        this.data = this._data.data;
+        this.observerPubSub = this._data.observerPubSub;
         this.init();
     }
     Vue.prototype = {
         init: function () {
             this.domContainer = this.getDom();
-            console.log(this.domContainer);
-            this.traverseDom(this.domContainer);
+            console.log();
+            this.domClone = this.domContainer.cloneNode(true);
+            this.traverseDom(this.domClone);
+            this.replaceDom();
             this.addWatch();
         },
         /*
@@ -134,9 +139,9 @@
          * 遍历dom
          * */
         traverseDom: function (domContainer) {
-//            var domContainer = this.domContainer;
-            domContainer.normalize();
-            let domChild = domContainer.childNodes;
+            var domClone = domContainer;
+            domClone.normalize();
+            let domChild = domClone.childNodes;
             let length = domChild.length;
             let reg = /\{\{(.+)\}\}/g;
             let value = '';
@@ -145,17 +150,18 @@
                 if (domI.nodeType === 3) {
                     value = domI.nodeValue.trim();
                     if (value) {
-                        console.log('文本节点');
-                        console.log(domI);
+                        /*console.log('文本节点');
+                        console.log(domI);*/
                         reg.test(value) && this.replaceBoudndary(domI);
 
                     }
                 } else if (domI.nodeType === 1) {
-                    console.log(domI);
+                    /*console.log(domI);*/
                     this.traverseDom(domI);
                 }
 
             }
+
         },
         /*
          * 边界符替换值
@@ -169,27 +175,39 @@
             let regResult = reg.exec(value);
             regResult = regResult[1];
             let arrResult = regResult.split('.');
-            let tempResult = this.data.data;
+            let tempResult = this.data;
             for (let i = 0; i < arrResult.length; i++) {
                 tempResult = tempResult[arrResult[i]];
             }
             console.log(tempResult);
             dom.nodeValue = value.replace(reg, tempResult);
         },
+
         addWatch: function () {
-            var self = this;
-            for(let key in this.data.data) {
-                if (this.data.data.hasOwnProperty(key)) {
-                    this.data.$watch(key, function (newName, oldName, target) {
+            let self = this;
+            let data = this._data.data;
+            for(let key in data) {
+                if (data.hasOwnProperty(key)) {
+                    this._data.$watch(key, function (newName, oldName, target) {
+                        /*console.log(self.data.data.user.name);
                         console.log(`${target}变化，由${oldName}变成了${newName}`);
-                        
+                        console.log(self.data.data.user.name);*/
+                        self.domClone = self.domContainer.cloneNode(true);
+                        self.traverseDom(self.domClone);
+                        self.replaceDom();
                     });
                 }
             }
+        },
+        /*
+        * */
+        replaceDom: function () {
+            var dom = this.getDom();
+            dom.parentNode.replaceChild(this.domClone, dom);
         }
     }
 
-    var data = {
+    /*var data = {
          people:{
              name: {
                  firstName: 'shaofeng',
@@ -198,7 +216,7 @@
             age: 25
         }
      };
-    var app2 = new Observer(data, true);
+    var app2 = new Observer(data);
 
     app2.$watch('people', function (newName, oldName, target) {
         console.log(`我的${target}发生了变化，由${oldName}变成了${newName}`);
@@ -207,7 +225,7 @@
 
     var app3 = new Observer({
         a: 1
-    }, true);
+    });*/
 
 </script>
 <script type="text/javascript">
