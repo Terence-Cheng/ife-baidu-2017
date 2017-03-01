@@ -7,26 +7,43 @@
         html, body {
             height: 100%;
         }
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        li {
+            list-style: none;
+        }
         #app {
             width: 800px;
-            height: 200px;
+            height: 800px;
             border: 1px solid #f0f0f0;
             border-radius: 2px;
             background: #eee;
         }
         #context-menu {
             position: fixed;
-            display: none;
+            /*display: none;*/
+            visibility: hidden;
+            width: 120px;
+            height: 120px;
             background: #fff;
+            box-shadow: 0 2px 2px 0 rgba(0,0,0, .2);
         }
         #context-menu.show {
-            display: block;
+            /*display: block;*/
+            visibility: visible;
         }
         .context-menu-list {
-            width: 30px;
+            /*width: 30px;*/
+            padding: 10px;
+            /*border: 1px solid #eee;*/
         }
         .context-menu-item {
-            border-top: 1px solid #333;
+            border-bottom: 1px solid #333;
+        }
+        .context-menu-item:hover {
+            cursor: pointer;
         }
     </style>
 </head>
@@ -63,7 +80,7 @@
         注意测试不同情况，尤其是极端情况下的效果
     *
     * 1.右击区域注册右击事件
-    *    显示自定义菜单（默认右下方，左下方，右上方）
+    *    显示自定义菜单（默认右下方，左下方，左上方）
     *    难点：
     *         鼠标位置
     *         如何出现在正确的位置上，左上角与鼠标位置相同，右上角与鼠标位置相同，右下角与鼠标位置相同
@@ -83,20 +100,76 @@
     function bindEvents () {
         app.addEventListener('contextmenu', rightClickCb, false);
         body.addEventListener('click', bodyClickCb, false);
+        contextMenu.addEventListener('click', contextMenuCb, false);
     }
 
     function rightClickCb (event) {
         event.preventDefault();
-        contextMenu.classList.add('show');
+        showMenu(event);
     }
     function bodyClickCb (event) {
-        console.log('jkkk')
-        contextMenu.classList.remove('show');
-    }
-    function contextMenuCb () {
+        var target = event.target;
+        if (domClosest(target, 'context-menu')) {
 
+        } else {
+            contextMenu.classList.remove('show');
+        }
     }
-    function getParents () {
+    function contextMenuCb (event) {
+        var target = event.target;
+        alert(target.innerText);
+    }
+    function domClosest (target, idQuery) {
+        var resultDom = document.getElementById(idQuery);
+        var targetName = target.tagName.toLowerCase();
+        if (targetName === 'body' || targetName === 'html') {
+            return null;
+        }
+        if (target === resultDom) {
+            return resultDom;
+        } else {
+            return domParent(target, idQuery);
+        }
+    }
+    function domParent (target, idQuery) {
+        var domResult = document.getElementById(idQuery);
+        var targetParent = target.parentNode;
+        if (targetParent === domResult) {
+            return targetParent;
+        } else if (targetParent.tagName.toLowerCase() === 'body') {
+            return null;
+        } else {
+            return domParent(targetParent, idQuery);
+        }
+    }
+    function showMenu (event) {
+        contextMenu.classList.add('show');
+        var mouseX = event.clientX;
+        var mouseY = event.clientY;
+        var body = document.body;
+        var bodyWidth = body.clientWidth;
+        var bodyHeight = body.clientHeight;
+        var menuWidth = contextMenu.offsetWidth;
+        var menuHeight = contextMenu.offsetHeight;
+        /*
+        * 右方区域不够，显示在左方
+        * 下方区域不够，显示在上方
+        * */
+        if ( bodyWidth - mouseX >= menuWidth) {
+            // 右方区域足够，显示在右方
+            contextMenu.style.left = mouseX + 'px';
+        } else {
+            // 右方区域不够，显示在左方
+            contextMenu.style.left = mouseX - menuWidth + 'px';
+        }
+
+        if (bodyHeight - mouseY >= menuHeight) {
+            // 下方区域足够
+            contextMenu.style.top = mouseY + 'px';
+        } else {
+            // 下方区域不够
+            contextMenu.style.top = mouseY - menuHeight + 'px';
+        }
 
     }
     bindEvents();
