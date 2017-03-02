@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>regex-1</title>
+</head>
+<body>
+<script>
+    var reg = /^1[34578]\d{9}$/g;
+    var a = '18812011232';
+    var b = '18812312';
+    var c = '123456789';
+    console.log(reg.test(a));
+    console.log(reg.test(b));
+    console.log(reg.test(c));
+
+    var regRepeatWord = /\b(\w+)\b\s+\1/g;
+    var repeatWords = ['foo foo bar', 'foo bar foo', 'foo  barbar bar'];
+
+
+
+</script>
+</body>
+</html>
