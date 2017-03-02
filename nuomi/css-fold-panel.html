@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>css-fold-panel</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        .panel-group {
+            margin: 50px;
+            padding: 15px;
+            width: 800px;
+            border: 1px solid #eee;
+            border-radius: 2px;
+        }
+        input[name=group] {
+            display: none;
+        }
+        .panel-group label {
+            display: block;
+            margin-bottom: 20px;
+        }
+        .group-content-hd {
+            padding: 0 20px;
+            line-height: 38px;
+            color: #333;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+        }
+        .group-content-hd:hover {
+            cursor: pointer;
+        }
+        .group-content-bd {
+            padding: 0 20px;
+            height: 0;
+            overflow: hidden;
+            border: 0;
+            border-bottom-left-radius: 3px;
+            border-bottom-right-radius: 3px;
+            transition: height .2s ease-out;
+        }
+        input[name=group]:checked ~ * .group-content-bd {
+            height: 150px;
+            border: 1px solid #ddd;
+            border-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="panel-group">
+        <label for="group-1">
+            <input type="radio" name="group" id="group-1">
+            <div class="group-content">
+                <h3 class="group-content-hd">Collapsible Group Item #1</h3>
+                <p class="group-content-bd">接口数据疯狂世界家乐福就拉双方均看老师安居客力帆就是垃圾分类sajlfkas奥拉夫监考老师拉双方均离开拉副科级拉斯看风景</p>
+            </div>
+        </label>
+        <label for="group-2">
+            <input type="radio" name="group" id="group-2">
+            <div class="group-content">
+                <h3 class="group-content-hd">Collapsible Group Item #2</h3>
+                <p class="group-content-bd">
+                    接口数据疯狂世界家乐福就拉双方均看老师安居客力帆就是垃圾分类sajlfkas奥拉夫监考老师拉双方均离开拉副科级拉斯看风景
+                    接口数据疯狂世界家乐福就拉双方均看老师安居客力帆就是垃圾分类sajlfkas奥拉夫监考老师拉双方均离开拉副科级拉斯看风景
+                    接口数据疯狂世界家乐福就拉双方均看老师安居客力帆就是垃圾分类sajlfkas奥拉夫监考老师拉双方均离开拉副科级拉斯看风景
+                    接口数据疯狂世界家乐福就拉双方均看老师安居客力帆就是垃圾分类sajlfkas奥拉夫监考老师拉双方均离开拉副科级拉斯看风景
+                    接口数据疯狂世界家乐福就拉双方均看老师安居客力帆就是垃圾分类sajlfkas奥拉夫监考老师拉双方均离开拉副科级拉斯看风景
+                </p>
+            </div>
+        </label>
+        <label for="group-3">
+            <input type="radio" name="group" id="group-3">
+            <div class="group-content">
+                <h3 class="group-content-hd">Collapsible Group Item #3</h3>
+                <p class="group-content-bd">接口数据疯狂世界家乐福就拉双方均看老师安居客力帆就是垃圾分类sajlfkas奥拉夫监考老师拉双方均离开拉副科级拉斯看风景</p>
+            </div>
+        </label>
+        <label for="group-4">
+            <input type="radio" name="group" id="group-4">
+            <div class="group-content">
+                <h3 class="group-content-hd">Collapsible Group Item #4</h3>
+                <p class="group-content-bd">接口数据疯狂世界家乐福就拉双方均看老师安居客力帆就是垃圾分类sajlfkas奥拉夫监考老师拉双方均离开拉副科级拉斯看风景</p>
+            </div>
+        </label>
+    </div>
+</body>
+</html>
