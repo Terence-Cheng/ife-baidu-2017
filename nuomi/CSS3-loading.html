@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3-loading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .animation-out {
+            width: 50px;
+            height: 50px;
+            border: 2px solid mediumvioletred;
+            border-bottom: 0;
+        }
+        .animation-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="animation-box">
+        <div class="animation-out">
+            <div class="animation-inner"></div>
+        </div>
+    </div>
+</body>
+</html>

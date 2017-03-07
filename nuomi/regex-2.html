@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>regex-2</title>
+</head>
+<body>
+    <script>
+        var hdReg = /(#{1,6})\s+(\w+)/;
+        var str = '# hello';
+        function replaceHd (str, p1, p2) {
+            var hdLength = p1.length;
+            hdLength = hdLength > 6 ? 6 : hdLength;
+            return `<h${hdLength}>${p2}</h${hdLength}>`;
+        }
+        str.replace(hdReg, replaceHd);
+    </script>
+</body>
+</html>
