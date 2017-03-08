@@ -26,61 +26,69 @@
             position: relative;
             width: 70px;
             height: 70px;
+
+        }
+        .animation-out-circle {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            right: 0;
             border: 2px solid mediumvioletred;
             border-left-color: transparent;
             border-radius: 50%;
-            /*animation: rotate_circle 1s infinite linear;*/
+            animation: rotate_circle 1s infinite linear;
         }
         .animation-inner-left, .animation-inner-right {
             position: absolute;
             top: 50%;
-            transform: translate(0, -50%);
+            transform: translate(0, -50%) rotateZ(-180deg);
             width: 25px;
             height: 50px;
 
         }
         @keyframes left_circle {
             from {
-                transform: translate(0, -50%) rotateZ(0deg);
+                transform: translate(0, -50%) rotateZ(-180deg);
             }
             25% {
-                transform: translate(0, -50%) rotateZ(-180deg);
+                transform: translate(0, -50%) rotateZ(-360deg);
             }
             50% {
-                transform: translate(0, -50%) rotateZ(-180deg);
+                transform: translate(0, -50%) rotateZ(-360deg);
             }
             75% {
-                transform: translate(0, -50%) rotateZ(-360deg);
+                transform: translate(0, -50%) rotateZ(-540deg);
             }
             to {
-                transform: translate(0, -50%) rotateZ(-360deg);
+                transform: translate(0, -50%) rotateZ(-540deg);
             }
         }
         @keyframes right_circle {
             from {
-                transform: translate(0, -50%) rotateZ(0deg);
+                transform: translate(0, -50%) rotateZ(-180deg);
                 /*z-index: 1;*/
             }
             25% {
-                transform: translate(0, -50%) rotateZ(-180deg);
+                transform: translate(0, -50%) rotateZ(-360deg);
                 z-index: 3;
             }
             25.001% {
                 z-index: 1;
             }
             50% {
-                transform: translate(0, -50%) rotateZ(-180deg);
+                transform: translate(0, -50%) rotateZ(-360deg);
                 z-index: 1;
             }
             74.999% {
                 z-index: 1;
             }
             75% {
-                transform: translate(0, -50%) rotateZ(-360deg);
+                transform: translate(0, -50%) rotateZ(-540deg);
                 z-index: 3;
             }
             to {
-                transform: translate(0, -50%) rotateZ(-360deg);
+                transform: translate(0, -50%) rotateZ(-540deg);
                 /*z-index: 3;*/
             }
         }
@@ -90,8 +98,7 @@
             border-top-left-radius: 25px;
             border-bottom-left-radius: 25px;
             transform-origin: 100% 50%;
-            transform: translate(0, -50%);
-            animation: left_circle 8s linear infinite;
+            animation: left_circle 2s linear infinite;
             z-index: 2;
 
         }
@@ -101,16 +108,29 @@
             border-top-right-radius: 25px;
             border-bottom-right-radius: 25px;
             transform-origin: 0 50%;
-            transform: translate(0, -50%);
-            animation: right_circle 8s linear infinite;
-            animation-delay: 2s;
+            animation: right_circle 2s linear infinite;
+            animation-delay: .5s;
             z-index: 3;
+        }
+        .animation-inner-cricle {
+            /*display: none;*/
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            /*border: 1px solid black;*/
+            border-radius: 50%;
+            background: -webkit-linear-gradient(left,rgb(251,139,189) , rgb(251,139,189) 50%,rgb(255,41,140) 50%, rgb(255,41,140));
         }
     </style>
 </head>
 <body>
     <div class="animation-box">
         <div class="animation-out">
+            <div class="animation-out-circle"></div>
+            <div class="animation-inner-cricle"></div>
             <div class="animation-inner-left"></div>
             <div class="animation-inner-right"></div>
         </div>
