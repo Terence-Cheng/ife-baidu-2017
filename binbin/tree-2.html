@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>task_22</title>
+    <style>
+        .root {
+            display: flex;
+            padding: 20px;
+            width: 1000px;
+            height: 300px;
+            border: 1px solid #000;
+            margin: 100px auto 10px;
+            justify-content: space-between;
+        }
+        .child_1 {
+            display: flex;
+            padding: 20px;
+            width: 450px;
+            height: 260px;
+            border: 1px solid red;
+            justify-content: space-between;
+        }
+        .child_2 {
+            display: flex;
+            padding: 20px;
+            width: 170px;
+            height: 220px;
+            border: 1px solid green;
+            justify-content: space-between;
+        }
+        .child_3 {
+            display: flex;
+            padding: 20px;
+            width: 35px;
+            height: 180px;
+            border: 1px solid blue;
+            justify-content: space-between;
+        }
+        input[type=button] {
+            margin-left: 100px;
+            /*width: 50px;*/
+            line-height: 40px;
+            font-size: 24px;
+        }
+        div {
+            /*background: #fff;*/
+        }
+        .now.root {
+            background: #000;
+        }
+        .now.child_1 {
+            background: red;
+        }
+        .now.child_2 {
+            background: green;
+        }
+        .now.child_3 {
+            background: blue;
+        }
+    </style>
+</head>
+<body>
+<div class="root" id="j-tree-root">
+    <div class="child_1">
+        <div class="child_2">
+            <div class="child_3"></div>
+            <div class="child_3"></div>
+        </div>
+        <div class="child_2">
+            <div class="child_3"></div>
+            <div class="child_3"></div>
+        </div>
+    </div>
+    <div class="child_1">
+        <div class="child_2">
+            <div class="child_3"></div>
+            <div class="child_3"></div>
+        </div>
+        <div class="child_2">
+            <div class="child_3"></div>
+            <div class="child_3"></div>
+        </div>
+    </div>
+</div>
+<input type="button" value="前序" id="j-btn-preorder">
+<input type="button" value="中序" id="j-btn-inorder">
+<input type="button" value="后序" id="j-btn-postorder">
+<script>
+    /*一
+     * html and css 参考了别人的
+     * 大体思路
+     * 实现前中后遍历，把遍历的结果放在一个数组中
+     * 对这个数组进行遍历，改变颜色
+     * */
+    /*二
+    * 建立一个json数据结构，然后将其dom构建出来，渲染在页面中
+    * 取消中序遍历
+    * 查询按钮和输入框，遍历的过程比较是否与查询的值相等，相等的话，显示,找不到的话给予提示
+    * */
+    var doc = document,
+            btnPre = doc.getElementById('j-btn-preorder'),
+            btnIn = doc.getElementById('j-btn-inorder'),
+            btnPost = doc.getElementById('j-btn-postorder'),
+            rootNode = doc.getElementById('j-tree-root'),
+            treeArr = [];
+
+    function bindEvents() {
+        btnPre.addEventListener('click', function () {
+            treeArr = [];
+            preOrder(rootNode);
+            // console.log(treeArr);
+            showProcess();
+        }, false);
+        btnIn.addEventListener('click', function () {
+            treeArr = [];
+            inOrder(rootNode);
+            // console.log(treeArr);
+            showProcess();
+        }, false);
+        btnPost.addEventListener('click', function () {
+            treeArr = [];
+            postOrder(rootNode);
+            // console.log(treeArr);
+            showProcess();
+        }, false);
+    }
+
+    function preOrder(node) {
+        if (node != null) {
+            treeArr.push(node);
+            preOrder(node.firstElementChild);
+            preOrder(node.lastElementChild);
+        }
+    }
+    function inOrder(node) {
+        if (node != null) {
+            inOrder(node.firstElementChild);
+            treeArr.push(node);
+            inOrder(node.lastElementChild);
+        }
+    }
+    function postOrder(node) {
+        if (node != null) {
+            postOrder(node.firstElementChild);
+            postOrder(node.lastElementChild);
+            treeArr.push(node);
+        }
+    }
+
+    function showProcess() {
+        var length = treeArr.length;
+        treeArr[0].classList.add('now');
+        for (var i = 1; i < length; i++) {
+            (function (i) {
+                setTimeout(function () {
+                    treeArr[i - 1].classList.remove('now');
+                    treeArr[i].classList.add('now');
+                }, 1000 * i);
+            })(i);
+        }
+        setTimeout(function () {
+            treeArr[length - 1].classList.remove('now');
+        }, length * 1000)
+    }
+
+    function init() {
+        bindEvents();
+    }
+    init();
+</script>
+</body>
+</html>
