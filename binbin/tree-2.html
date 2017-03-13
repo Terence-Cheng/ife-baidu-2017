@@ -2,15 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>task_22</title>
+    <title>tree_2</title>
     <style>
         .root {
             display: flex;
+            margin: 5px;
             padding: 20px;
-            width: 1000px;
-            height: 300px;
+            /*width: 1000px;
+            height: 300px;*/
             border: 1px solid #000;
             margin: 100px auto 10px;
+            justify-content: space-between;
+        }
+        .root .tree-root {
+            display: flex;
+            margin: 5px;
+            padding: 20px;
+            border: 1px solid red;
+            flex: 1;
             justify-content: space-between;
         }
         .child_1 {
@@ -49,6 +58,9 @@
         .now.root {
             background: #000;
         }
+        .now.tree-root {
+            background: red;
+        }
         .now.child_1 {
             background: red;
         }
@@ -62,7 +74,7 @@
 </head>
 <body>
 <div class="root" id="j-tree-root">
-    <div class="child_1">
+    <!--<div class="child_1">
         <div class="child_2">
             <div class="child_3"></div>
             <div class="child_3"></div>
@@ -81,7 +93,7 @@
             <div class="child_3"></div>
             <div class="child_3"></div>
         </div>
-    </div>
+    </div>-->
 </div>
 <input type="button" value="前序" id="j-btn-preorder">
 <input type="button" value="中序" id="j-btn-inorder">
@@ -98,12 +110,100 @@
     * 取消中序遍历
     * 查询按钮和输入框，遍历的过程比较是否与查询的值相等，相等的话，显示,找不到的话给予提示
     * */
+
+    /* 数组
+    * name
+    * child
+    * */
+    [{
+        name: '',
+        child: []
+    }]
+    var treeData = [
+        {
+            name:'1',
+            child: [
+                {
+                    name: '1-1',
+                    child: [
+                        {
+                            name: '1-1-1',
+                        },
+                        {
+                            name: '1-1-2'
+                        }
+                    ]
+                }, {
+                    name: '1-2',
+                    child: [
+                        {
+                            name: '1-2-1',
+                        },
+                        {
+                            name: '1-2-2'
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            name:'2',
+            child: [
+                {
+                    name: '2-1',
+                    child: [
+                        {
+                            name: '2-1-1',
+                        },
+                        {
+                            name: '2-1-2'
+                        }
+                    ]
+                }, {
+                    name: '2-2',
+                    child: [
+                        {
+                            name: '2-2-1',
+                        },
+                        {
+                            name: '2-2-2'
+                        }
+                    ]
+                }
+            ]
+        },
+    ]
+
+
+    function createTreeDom (data, parent) {
+        var length = data.length;
+        var i = 0;
+        var div;
+        for (; i < length; i++) {
+            div = document.createElement('div');
+            div.innerText = data[i].name;
+            div.classList.add('tree-root');
+            parent.appendChild(div);
+            if (data[i].child) {
+                createTreeDom(data[i].child, div);
+            }
+        }
+        return parent;
+    }
+
+    var fragmentTree = document.createDocumentFragment();
+    var domTree = createTreeDom(treeData,fragmentTree);
+
+    console.log(domTree);
+
     var doc = document,
             btnPre = doc.getElementById('j-btn-preorder'),
             btnIn = doc.getElementById('j-btn-inorder'),
             btnPost = doc.getElementById('j-btn-postorder'),
             rootNode = doc.getElementById('j-tree-root'),
             treeArr = [];
+
+    rootNode.appendChild(fragmentTree);
 
     function bindEvents() {
         btnPre.addEventListener('click', function () {
