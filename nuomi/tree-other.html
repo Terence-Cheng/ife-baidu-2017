@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>tree</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        .node ul{
+            margin-left:20px;
+        }
+        .node .node{
+            display:none;
+        }
+        .node .tree{
+            height:24px;
+            line-height:24px;
+        }
+        .ce_ceng_close{
+            background:url(images/cd_zd1.png) left center no-repeat;
+            padding-left: 15px;
+        }
+        .ce_ceng_open{
+            background:url(images/cd_zd.png) left center no-repeat;
+        }
+    </style>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+</head>
+
+<body>
+<div class="cd_zj_l">
+
+
+    <div class="cd_title">目录导航</div>
+    <div class="cv_fcv node">
+        <div class="tree">哲学、宗教</div>
+        <ul class="node">
+            <li>
+                <div class="tree">哲学伦理</div>
+                <ul class="node">
+                    <li>
+                        <div class="tree">马克思主义哲学</div>
+                        <div class="tree">马克思主义哲学</div>
+                        <div class="tree">马克思主义哲学</div>
+                        <div class="tree">马克思主义哲学</div>
+                    </li>
+                    <div style="clear:both"></div>
+                </ul>
+
+            </li>
+            <div style="clear:both"></div>
+        </ul>
+        <div class="tree">哲学、宗教</div>
+        <ul class="node">
+            <li>
+                <div class="tree">哲学伦理</div>
+                <ul class="node">
+                    <li>
+                        <div class="tree">马克思主义哲学</div>
+                        <div class="tree">马克思主义哲学</div>
+                        <div class="tree">马克思主义哲学</div>
+                        <div class="tree">马克思主义哲学</div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    $(".tree").each(function(index, element) {
+        if($(this).next(".node").length>0){
+            $(this).addClass("ce_ceng_close");
+        }
+    });
+    $(".tree").click(function(e){
+        var ul = $(this).next(".node");
+        if(ul.css("display")=="none"){
+            ul.slideDown();
+            $(this).addClass("ce_ceng_open");
+            ul.find(".ce_ceng_close").removeClass("ce_ceng_open");
+        }else{
+            ul.slideUp();
+            $(this).removeClass("ce_ceng_open");
+            ul.find(".node").slideUp();
+            ul.find(".ce_ceng_close").removeClass("ce_ceng_open");
+        }
+    });
+</script>
+</body>
+</html>

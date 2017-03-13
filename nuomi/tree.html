@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>tree</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .floder {
+            margin: 50px;
+        }
+
+        dl {
+            padding-left: 10px;
+        }
+        dt {
+            /*padding-left: 15px;*/
+        }
+        dd {
+            padding-left: 20px;
+        }
+        em {
+            font-style: normal;
+        }
+        dt,dd {
+            position: relative;
+        }
+        dd:before, dt:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -15px;
+            height: 100%;
+            border-left: 1px dashed #ccc;
+        }
+        dd:last-child:before {
+            height: 50%;
+        }
+        dd:after {
+            content: '';
+            position: absolute;
+            bottom: 50%;
+            left: -15px;
+            width: 25px;
+            border-bottom: 1px dashed #ccc;
+        }
+        .floder > dl > dd:after {
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <!--
+        每个文件夹是一个dl
+        文件夹名称放在dt标签里面
+        文件名称放在dd里面
+    -->
+    <div class="floder">
+        <dl>
+            <dt>父节点1 - <em>展开</em> </dt>
+            <dd>
+                <dl>
+                    <dt>父节点11 — <em>折叠</em></dt>
+                    <dd>叶子节点111</dd>
+                    <dd>叶子节点112</dd>
+                    <dd>叶子节点113</dd>
+                    <dd>叶子节点114</dd>
+                </dl>
+                <dl>
+                    <dt>父节点12 — <em>折叠</em></dt>
+                    <dd>叶子节点121</dd>
+                    <dd>叶子节点122</dd>
+                    <dd>叶子节点123</dd>
+                    <dd>叶子节点124</dd>
+                </dl>
+                <dl>
+                    <dt>父节点13 — <em>没有子节点</em> </dt>
+                </dl>
+            </dd>
+        </dl>
+        <dl>
+            <dt>父节点2</dt>
+        </dl>
+        <dl>
+            <dt>父节点3</dt>
+        </dl>
+
+    </div>
+</body>
+</html>

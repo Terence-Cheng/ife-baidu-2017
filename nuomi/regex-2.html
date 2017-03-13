@@ -3,9 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>regex-2</title>
+    <style>
+       /* * {
+            padding: 0;
+            margin: 0;
+        }*/
+    </style>
 </head>
 <body>
+<textarea name="text" id="j-text" cols="30" rows="10">
+    hello
+    nihao
+</textarea>
+<div id="j-text-show">
+
+</div>
     <script>
+        /*
+        * 标题解析
+        * 列表解析
+        * 引用解析
+        * 代码块解析（可能跨行）
+        * 在整个文章中怎么把他们组合在一起进行解析？？
+             * 整体解析已经存在的文章，
+                * 按行解析（特殊情况多行解析）匹配其中一个规则，如果没有匹配到则下一行
+                * 下一行再继续匹配其中一个规则，直到结尾
+             * 局部变动的话，再局部解析
+             * 删除的话，进行相应的删除
+        * */
         var hdReg = /(#{1,6})\s+(\w+)/;
         var str = '# hello';
         function replaceHd (str, p1, p2) {
@@ -13,7 +38,27 @@
             hdLength = hdLength > 6 ? 6 : hdLength;
             return `<h${hdLength}>${p2}</h${hdLength}>`;
         }
+        var listReg = /(\*)\s+(\w+)/;
+        function replaceList (str, p1, p2) {
+            return `<li>${p2}</li>`;
+        }
         str.replace(hdReg, replaceHd);
+        '* hahahahah'.replace(listReg, replaceList);
+        var textarea = document.getElementById('j-text');
+        var textValue = textarea.value;
+        var regObj = {
+            hd: {
+                reg: /(#{1,6})\s+(\w+)/,
+                fuc: replaceHd
+            },
+            list: {
+                reg: listReg,
+                fuc: replaceList
+            }
+        }
+        console.log(textarea.value);
+        var domShow = document.getElementById('j-text-show');
+
     </script>
 </body>
 </html>
