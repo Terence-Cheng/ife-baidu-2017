@@ -58,8 +58,11 @@
         .now.root {
             background: #000;
         }
+        .right.tree-root {
+            background: blueviolet;
+        }
         .now.tree-root {
-            background: red;
+            background: yellowgreen;
         }
         .now.child_1 {
             background: red;
@@ -95,9 +98,15 @@
         </div>
     </div>-->
 </div>
-<input type="button" value="前序" id="j-btn-preorder">
-<input type="button" value="中序" id="j-btn-inorder">
-<input type="button" value="后序" id="j-btn-postorder">
+<input type="button" value="前序" id="j-btn-preorder" style="display: none">
+<input type="button" value="中序" id="j-btn-inorder" style="display: none">
+<input type="button" value="后序" id="j-btn-postorder" style="display: none">
+<input type="text" id="j-btn-textvalue" value="1-2-1" placeholder="请输入查询的值">
+<select name="search-type" id="j-select-type">
+    <option value="1" selected>前序</option>
+    <option value="3">后序</option>
+</select>
+<input type="button" id="j-btn-search" value="查询">
 <script>
     /*一
      * html and css 参考了别人的
@@ -131,6 +140,9 @@
                         },
                         {
                             name: '1-1-2'
+                        },
+                        {
+                            name: '1-1-3'
                         }
                     ]
                 }, {
@@ -151,14 +163,14 @@
             child: [
                 {
                     name: '2-1',
-                    child: [
+                    /*child: [
                         {
                             name: '2-1-1',
                         },
                         {
                             name: '2-1-2'
                         }
-                    ]
+                    ]*/
                 }, {
                     name: '2-2',
                     child: [
@@ -173,8 +185,21 @@
             ]
         },
     ]
+    var doc = document,
+        btnPre = doc.getElementById('j-btn-preorder'),
+        btnIn = doc.getElementById('j-btn-inorder'),
+        btnPost = doc.getElementById('j-btn-postorder'),
+        selectType = doc.getElementById('j-select-type'),
+        inputSearch = doc.getElementById('j-btn-textvalue'),
+        btnSearch = doc.getElementById('j-btn-search'),
+        rootNode = doc.getElementById('j-tree-root'),
+        fragmentTree = document.createDocumentFragment(),
+        hightlightRoot = null,  // 存放高亮显示的元素
+        treeArr = [];
 
-
+    /*
+    * 根据节点，生成dom树
+    * */
     function createTreeDom (data, parent) {
         var length = data.length;
         var i = 0;
@@ -183,6 +208,7 @@
             div = document.createElement('div');
             div.innerText = data[i].name;
             div.classList.add('tree-root');
+            div.dataset.value = data[i].name;
             parent.appendChild(div);
             if (data[i].child) {
                 createTreeDom(data[i].child, div);
@@ -190,20 +216,6 @@
         }
         return parent;
     }
-
-    var fragmentTree = document.createDocumentFragment();
-    var domTree = createTreeDom(treeData,fragmentTree);
-
-    console.log(domTree);
-
-    var doc = document,
-            btnPre = doc.getElementById('j-btn-preorder'),
-            btnIn = doc.getElementById('j-btn-inorder'),
-            btnPost = doc.getElementById('j-btn-postorder'),
-            rootNode = doc.getElementById('j-tree-root'),
-            treeArr = [];
-
-    rootNode.appendChild(fragmentTree);
 
     function bindEvents() {
         btnPre.addEventListener('click', function () {
@@ -224,13 +236,36 @@
             // console.log(treeArr);
             showProcess();
         }, false);
+        btnSearch.addEventListener('click', function () {
+            let valueSearch = inputSearch.value;
+            if (!valueSearch) {
+                alert('请输入查询的值');
+                return;
+            }
+            let typeSearch = selectType.value;
+            treeArr = [];
+            if (typeSearch == 1) {
+                console.log('前序查询');
+                preOrder(rootNode);
+                showSearch();
+            } else {
+                console.log('后序查询');
+                postOrder(rootNode);
+                showSearch();
+            }
+        }, false);
     }
 
     function preOrder(node) {
         if (node != null) {
             treeArr.push(node);
-            preOrder(node.firstElementChild);
-            preOrder(node.lastElementChild);
+            let length = node.children.length;
+            let i = 0;
+            for (; i < length; i++) {
+                preOrder(node.children[i]);
+            }
+            /*preOrder(node.firstElementChild);
+            preOrder(node.lastElementChild);*/
         }
     }
     function inOrder(node) {
@@ -242,29 +277,64 @@
     }
     function postOrder(node) {
         if (node != null) {
-            postOrder(node.firstElementChild);
-            postOrder(node.lastElementChild);
+            /*postOrder(node.firstElementChild);
+            postOrder(node.lastElementChild);*/
+            let length = node.children.length;
+            let i = 0;
+            for (; i < length; i++) {
+                postOrder(node.children[i]);
+            }
             treeArr.push(node);
         }
     }
 
-    function showProcess() {
+    function showSearch() {
         var length = treeArr.length;
+        hightlightRoot && hightlightRoot.classList.remove('right');
         treeArr[0].classList.add('now');
         for (var i = 1; i < length; i++) {
             (function (i) {
                 setTimeout(function () {
                     treeArr[i - 1].classList.remove('now');
                     treeArr[i].classList.add('now');
+                    console.log(treeArr[i].dataset.value);
+                    if (treeArr[i].dataset.value == inputSearch.value) {
+                        treeArr[i].classList.remove('now');
+                        treeArr[i].classList.add('right');
+                        hightlightRoot = treeArr[i];
+                        setTimeout(function () {
+                            alert('查询到');
+                        },200);
+                    }
                 }, 1000 * i);
             })(i);
+
+            if (treeArr[i].dataset.value == inputSearch.value) {
+                break;
+            }
+
         }
+
+        if (i == length && treeArr[length - 1].dataset.value != inputSearch.value) {
+            setTimeout(function () {
+                treeArr[length - 1].classList.remove('now');
+                alert('没有查询到');
+            }, length * 1000)
+        }
+
+    }
+
+    function showProcess() {
+        var length = treeArr.length;
+        showSearch();
         setTimeout(function () {
             treeArr[length - 1].classList.remove('now');
         }, length * 1000)
     }
 
     function init() {
+        createTreeDom(treeData,fragmentTree);
+        rootNode.appendChild(fragmentTree);
         bindEvents();
     }
     init();
