@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>tree_3</title>
+    <style>
+        .root {
+            display: flex;
+            margin: 5px;
+            padding: 20px;
+            /*width: 1000px;
+            height: 300px;*/
+            border: 1px solid #000;
+            margin: 100px auto 10px;
+            justify-content: space-between;
+        }
+        .root .tree-root {
+            display: flex;
+            margin: 5px;
+            padding: 20px;
+            border: 1px solid red;
+            flex: 1;
+            justify-content: space-between;
+        }
+        .tree-root:hover {
+            cursor: pointer;
+        }
+        .child_1 {
+            display: flex;
+            padding: 20px;
+            width: 450px;
+            height: 260px;
+            border: 1px solid red;
+            justify-content: space-between;
+        }
+        .child_2 {
+            display: flex;
+            padding: 20px;
+            width: 170px;
+            height: 220px;
+            border: 1px solid green;
+            justify-content: space-between;
+        }
+        .child_3 {
+            display: flex;
+            padding: 20px;
+            width: 35px;
+            height: 180px;
+            border: 1px solid blue;
+            justify-content: space-between;
+        }
+        input[type=button] {
+            margin-left: 100px;
+            /*width: 50px;*/
+            line-height: 40px;
+            font-size: 24px;
+        }
+        div {
+            /*background: #fff;*/
+        }
+        .now.root {
+            background: #000;
+        }
+        .right.tree-root {
+            background: blueviolet;
+        }
+        .now.tree-root {
+            background: yellowgreen;
+        }
+        .now.child_1 {
+            background: red;
+        }
+        .now.child_2 {
+            background: green;
+        }
+        .now.child_3 {
+            background: blue;
+        }
+    </style>
+</head>
+<body>
+<div class="root" id="j-tree-root">
+    <!--<div class="child_1">
+        <div class="child_2">
+            <div class="child_3"></div>
+            <div class="child_3"></div>
+        </div>
+        <div class="child_2">
+            <div class="child_3"></div>
+            <div class="child_3"></div>
+        </div>
+    </div>
+    <div class="child_1">
+        <div class="child_2">
+            <div class="child_3"></div>
+            <div class="child_3"></div>
+        </div>
+        <div class="child_2">
+            <div class="child_3"></div>
+            <div class="child_3"></div>
+        </div>
+    </div>-->
+</div>
+<input type="button" value="前序" id="j-btn-preorder" style="display: none">
+<input type="button" value="中序" id="j-btn-inorder" style="display: none">
+<input type="button" value="后序" id="j-btn-postorder" style="display: none">
+<input type="text" id="j-btn-textvalue" value="1-2-1" placeholder="请输入查询的值">
+<select name="search-type" id="j-select-type">
+    <option value="1" selected>前序</option>
+    <option value="3">后序</option>
+</select>
+<input type="button" id="j-btn-search" value="查询">
+<input type="button" id="j-btn-delete" value="删除">
+<input type="text" id="j-btn-textadd" value="add" placeholder="请输入添加节点的值">
+<input type="button" id="j-btn-add" value="增加">
+<script>
+    /*一
+     * html and css 参考了别人的
+     * 大体思路
+     * 实现前中后遍历，把遍历的结果放在一个数组中
+     * 对这个数组进行遍历，改变颜色
+     * */
+    /*二
+    * 建立一个json数据结构，然后将其dom构建出来，渲染在页面中
+    * 取消中序遍历
+    * 查询按钮和输入框，遍历的过程比较是否与查询的值相等，相等的话，显示,找不到的话给予提示
+    * */
+
+    /*
+    * 三
+    * 选中
+    * 删除
+    * 增加
+    * */
+
+    /* 数组
+    * name
+    * child
+    * */
+    [{
+        name: '',
+        child: []
+    }]
+    var treeData = [
+        {
+            name:'1',
+            child: [
+                {
+                    name: '1-1',
+                    child: [
+                        {
+                            name: '1-1-1',
+                        },
+                        {
+                            name: '1-1-2'
+                        },
+                        {
+                            name: '1-1-3'
+                        }
+                    ]
+                }, {
+                    name: '1-2',
+                    child: [
+                        {
+                            name: '1-2-1',
+                        },
+                        {
+                            name: '1-2-2'
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            name:'2',
+            child: [
+                {
+                    name: '2-1',
+                    /*child: [
+                        {
+                            name: '2-1-1',
+                        },
+                        {
+                            name: '2-1-2'
+                        }
+                    ]*/
+                }, {
+                    name: '2-2',
+                    child: [
+                        {
+                            name: '2-2-1',
+                        },
+                        {
+                            name: '2-2-2'
+                        }
+                    ]
+                }
+            ]
+        },
+    ]
+    var doc = document,
+        btnPre = doc.getElementById('j-btn-preorder'),
+        btnIn = doc.getElementById('j-btn-inorder'),
+        btnPost = doc.getElementById('j-btn-postorder'),
+        selectType = doc.getElementById('j-select-type'),
+        inputSearch = doc.getElementById('j-btn-textvalue'),
+        btnSearch = doc.getElementById('j-btn-search'),
+        rootNode = doc.getElementById('j-tree-root'),
+        fragmentTree = doc.createDocumentFragment(),
+        hightlightRoot = null,  // 存放高亮显示的元素
+        btnAdd = doc.getElementById('j-btn-add'),  // 按钮——增加
+        btnDelete = doc.getElementById('j-btn-delete') // 按钮——删除
+        inputAdd = doc.getElementById('j-btn-textadd'); // 文本框——增加节点的值
+        treeArr = [];
+
+    /*
+    * 根据节点，生成dom树
+    * */
+    function createTreeDom (data, parent) {
+        var length = data.length;
+        var i = 0;
+        var div;
+        for (; i < length; i++) {
+            /*div = document.createElement('div');
+            div.innerText = data[i].name;
+            div.classList.add('tree-root');
+            div.dataset.value = data[i].name;*/
+            div = createSingleNode(data[i].name);
+            parent.appendChild(div);
+            if (data[i].child) {
+                createTreeDom(data[i].child, div);
+            }
+        }
+        return parent;
+    }
+
+    /*
+    * 生成单个节点，div标签的值
+    * @param: {string}  name  节点的值（div标签的内容）
+    * @return 生成的节点
+    * */
+    function createSingleNode(name) {
+        var div = document.createElement('div');
+        div.innerText = name;
+        div.classList.add('tree-root');
+        div.dataset.value = name;
+        return div;
+    }
+
+
+    function bindEvents() {
+        btnPre.addEventListener('click', function () {
+            treeArr = [];
+            preOrder(rootNode);
+            // console.log(treeArr);
+            showProcess();
+        }, false);
+        btnIn.addEventListener('click', function () {
+            treeArr = [];
+            inOrder(rootNode);
+            // console.log(treeArr);
+            showProcess();
+        }, false);
+        btnPost.addEventListener('click', function () {
+            treeArr = [];
+            postOrder(rootNode);
+            // console.log(treeArr);
+            showProcess();
+        }, false);
+        btnSearch.addEventListener('click', function () {
+            let valueSearch = inputSearch.value;
+            if (!valueSearch) {
+                alert('请输入查询的值');
+                return;
+            }
+            let typeSearch = selectType.value;
+            treeArr = [];
+            if (typeSearch == 1) {
+                console.log('前序查询');
+                preOrder(rootNode);
+                showSearch();
+            } else {
+                console.log('后序查询');
+                postOrder(rootNode);
+                showSearch();
+            }
+        }, false);
+
+        /*
+        * 节点注册点击事件，利用事件冒泡
+        * */
+        rootNode.addEventListener('click', function (event) {
+            hightlightRoot && hightlightRoot.classList.remove('right');
+            let target = event.target;
+            target.classList.add('right');
+            hightlightRoot = target;
+        }, false);
+
+        /*
+        * 删除节点注册事件
+        * */
+        btnDelete.addEventListener('click', function (event) {
+            hightlightRoot && hightlightRoot.parentNode.removeChild(hightlightRoot);
+            hightlightRoot = null;
+        }, false);
+
+        /*
+        * 增加节点注册事件
+        * */
+        btnAdd.addEventListener('click', function (event) {
+            let parentNode = rootNode;
+            let value = inputAdd.value;
+            if (!value) {
+                alert('请输入节点的值')
+                return;
+            }
+            if (hightlightRoot) {
+                parentNode = hightlightRoot;
+            }
+            parentNode.appendChild(createSingleNode(value));
+        }, false)
+    }
+
+    function preOrder(node) {
+        if (node != null) {
+            treeArr.push(node);
+            let length = node.children.length;
+            let i = 0;
+            for (; i < length; i++) {
+                preOrder(node.children[i]);
+            }
+            /*preOrder(node.firstElementChild);
+            preOrder(node.lastElementChild);*/
+        }
+    }
+    function inOrder(node) {
+        if (node != null) {
+            inOrder(node.firstElementChild);
+            treeArr.push(node);
+            inOrder(node.lastElementChild);
+        }
+    }
+    function postOrder(node) {
+        if (node != null) {
+            /*postOrder(node.firstElementChild);
+            postOrder(node.lastElementChild);*/
+            let length = node.children.length;
+            let i = 0;
+            for (; i < length; i++) {
+                postOrder(node.children[i]);
+            }
+            treeArr.push(node);
+        }
+    }
+
+    function showSearch() {
+        var length = treeArr.length;
+        hightlightRoot && hightlightRoot.classList.remove('right');
+        treeArr[0].classList.add('now');
+        for (var i = 1; i < length; i++) {
+            (function (i) {
+                setTimeout(function () {
+                    treeArr[i - 1].classList.remove('now');
+                    treeArr[i].classList.add('now');
+                    console.log(treeArr[i].dataset.value);
+                    if (treeArr[i].dataset.value == inputSearch.value) {
+                        treeArr[i].classList.remove('now');
+                        treeArr[i].classList.add('right');
+                        hightlightRoot = treeArr[i];
+                        setTimeout(function () {
+                            alert('查询到');
+                        },200);
+                    }
+                }, 1000 * i);
+            })(i);
+
+            if (treeArr[i].dataset.value == inputSearch.value) {
+                break;
+            }
+
+        }
+
+        if (i == length && treeArr[length - 1].dataset.value != inputSearch.value) {
+            setTimeout(function () {
+                treeArr[length - 1].classList.remove('now');
+                alert('没有查询到');
+            }, length * 1000)
+        }
+
+    }
+
+    function showProcess() {
+        var length = treeArr.length;
+        showSearch();
+        setTimeout(function () {
+            treeArr[length - 1].classList.remove('now');
+        }, length * 1000)
+    }
+
+    function init() {
+        createTreeDom(treeData,fragmentTree);
+        rootNode.appendChild(fragmentTree);
+        bindEvents();
+    }
+    init();
+</script>
+</body>
+</html>
