@@ -6,12 +6,13 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>echart No.1</title>
-    <script src="echarts.js"></script>
+    <script src="./echarts.js"></script>
 </head>
 <body>
     <div id="main" style="width: 600px; height: 400px"></div>
     <script>
         var myChart = echarts.init(document.getElementById('main'));
+        var yData = [5, 20, 36, 10, 10, 20];
         var option = {
             title: {
                 text: 'Echarts 入门示例'
@@ -28,11 +29,27 @@
             yAxis: {
 
             },
-            series: [{
-                name: '销量',
-                type: 'bar',
-                data: [5, 20, 36, 10, 10, 20]
-            }]
+            series: [
+                {
+                    name: '销量',
+                    type: 'bar',
+                    data: yData
+                },
+                {
+                    name: '销量',
+                    type: 'line',
+                    data: yData,
+                    lineStyle: {
+                        normal: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                offset: 0, color: 'red' // 0% 处的颜色
+                                }, {
+                                offset: 1, color: 'blue' // 100% 处的颜色
+                            }], false)                            
+                        }
+                    }
+                }
+            ]
         }
         myChart.setOption(option);
     </script>
